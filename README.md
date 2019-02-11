@@ -1,2 +1,2 @@
 # blogapp
-Blog application based on LiaoXueFeng Awesome Python Webapp
+A simple self-used blog application based on flask
