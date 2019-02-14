@@ -4,12 +4,17 @@ from . import db
 
 
 def next_id():
-    return '%015d%s000' % (int(time.time * 1000), uuid.uuid4())
+    return '%015d%s000' % (int(time.time() * 1000), uuid.uuid4().hex)
 
 
-ClassifyTagRegistration = db.Table('classifytagregistration',
-                                   db.Column('post_id', db.String(50), db.ForeignKey('posts.id')),
-                                   db.Column('tag_id', db.Integer, db.ForeignKey('classifytags.id')))
+
+class Follow(db.Model):
+    __tablename__ = 'follows'
+
+    # 记录关注者的id, 关注的id 和 关注的时间
+    follower_id = db.Column(db.String(50), db.ForeignKey('users.id'), primary_key=True)
+    followed_id = db.Column(db.String(50), db.ForeignKey('users.id'), primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class User(db.Model):
@@ -30,7 +35,7 @@ class User(db.Model):
     # 其他状态信息
     status = db.Column(db.String(8), index=True)
 
-    # 其他关联信息
+    # 关联信息
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     comments = db.relationship('Comment', backref='user', lazy='dynamic')
     classifytags = db.relationship('ClassifyTag', backref='user', lazy='dynamic')
@@ -38,8 +43,6 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User name:%r>' % self.name
-
-    # 关联信息
 
 
 class Role(db.Model):
@@ -56,6 +59,23 @@ class Role(db.Model):
 
     def __repr__(self):
         return '<Role name:%r>' % self.name
+
+
+class ClassifyTag(db.Model):
+    '''
+    博客文章的分类标签
+    '''
+    ___tablename__ = 'classifytags'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64))
+
+    # 关联信息
+    user_id = db.Column(db.String(50), db.ForeignKey('users.id'))
+
+
+ClassifyTagRegistration = db.Table('classifytagregistration',
+                                   db.Column('post_id', db.String(50), db.ForeignKey('posts.id')),
+                                   db.Column('tag_id', db.Integer, db.ForeignKey(ClassifyTag.id)))
 
 
 class Post(db.Model):
@@ -98,21 +118,11 @@ class Comment(db.Model):
 
     # 关联信息
     author_id = db.Column(db.String(50), db.ForeignKey('users.id'))
+    post_id = db.Column(db.String(50), db.ForeignKey("posts.id"))
 
     def __repr__(self):
         return '<Comment id:%r>' % self.id
 
-
-class ClassifyTag(db.Model):
-    '''
-    博客文章的分类标签
-    '''
-    ___tablename__ = 'classifytags'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
-
-    # 关联信息
-    user_id = db.Column(db.String(50), db.ForeignKey('users.id'))
 
 
 class ArticleTag(db.Model):
@@ -127,9 +137,8 @@ class ArticleTag(db.Model):
     post_id = db.Column(db.String(50), db.ForeignKey('posts.id'))
 
 
-
-class ExternalUser(db.Model):
-    '''
-    博客的外部用户类 如微博 QQ等
-    '''
-    pass
+# class ExternalUser(db.Model):
+#     '''
+#     博客的外部用户类 如微博 QQ等
+#     '''
+#     pass

@@ -1,10 +1,14 @@
+import os
+
 class Config:
     pass
 
 
 class DevelopmentConfig(Config):
-    pass
-
+    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    DEBUG = True
 
 class TestingConfig(Config):
     pass
