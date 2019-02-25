@@ -1,0 +1,139 @@
+html{
+    height: 100%;
+}
+
+body{
+    background-color: #F6F6F6;
+    font-family: "Microsoft YaHei",Arial,Helvetica,sans-serif,"SimSun";
+    font-size: 14px;
+    height: 100%;
+}
+
+.bg{
+    background-color: #F6F6F6;
+}
+
+button{
+    background-color: transparent;
+}
+
+a:hover{
+    text-decoration: none;
+}
+
+hr{
+    margin: 2px 0px;
+}
+
+a{
+    color: #333;
+}
+
+.pagination > li > a, .pagination>li>span{
+    color: #777;
+    background-color: #f6f6f6;
+}
+
+.glyphicon:before{
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+.icon-bar{
+    background-color: rgb(136, 136, 136);
+}
+
+#navbar{
+    margin-bottom: 0px;
+}
+
+.btn-sort:hover{
+    background-color: #eeeeee;
+}
+
+#main{
+    max-width: 1000px;
+    min-height: 100%;
+}
+
+.btn:focus,.btn:active:focus,.btn.active:focus,.btn.focus,.btn:active.focus,.btn.active.focus {
+    outline: none;
+    background-color:rgb(246, 246, 246,1);
+}
+
+.article{
+
+    border-bottom: 1px solid #eeeeee;
+    padding: 10px 10px 10px 10px;
+    margin-bottom: 15px;
+}
+.article:hover{
+    background-color: #eeeeee;
+}
+
+.article > p{
+    padding: 0px 10px;
+    margin-bottom: 5px;
+}
+
+
+.article > a{
+    color: #333;
+    text-decoration: none;
+}
+
+.article span{
+    margin-left: 10px;
+}
+
+.article > a> h1{
+    font-size: 20px;
+    margin-top: 0px;
+}
+
+.panel-body{
+    padding: 10px;
+}
+
+.panel-body > li{
+    background-color: #F6F6F6;
+}
+
+#footer{
+    padding-top: 10px;
+    margin-top: -66px;
+    border-top: 1px solid #eeeeee;
+    position: relative;
+    height: 66px;
+}
+
+#footer p{
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.list-group-item{
+    background-color: #F6F6F6;
+    border:none;
+    padding: 5px 10px;
+}
+
+.list-group{
+    margin-bottom: 5px;
+}
+
+.panel-margin{
+    margin-top: 10px;
+}
+
+.panel-body > ul > li:hover{
+    background-color: #eeeeee;
+}
+
+#content{
+    padding-bottom: 75px;
+}
+
+#pagination{
+    margin: 10px 0px;
+}

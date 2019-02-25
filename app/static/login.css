@@ -1,0 +1,36 @@
+body{
+    background-color: #F6F6F6;
+    font-family: "Microsoft YaHei",Arial,Helvetica,sans-serif,"SimSun";
+    font-size: 14px;
+    max-width: 1000px;
+}
+
+#login-main{
+    padding: 10px;
+    max-width: 360px;
+    position: relative;
+    left: 50%;
+    top: 40%;
+    transform: translate(-50%, -50%);
+}
+
+hr{
+    margin: 2px 0px 10px 0px;
+}
+
+#code-change{
+    border: none;
+    background-color: transparent;
+    padding-right: 0px;
+}
+
+#main{
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+a:hover{
+    text-decoration: none;
+    color: black;
+}

@@ -1,11 +1,23 @@
 import time, uuid
 from datetime import datetime
+from . import login_manager
+from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 
 
 def next_id():
     return '%015d%s000' % (int(time.time() * 1000), uuid.uuid4().hex)
 
+
+@login_manager.user_loader
+def load_user(id):
+    return User.query.get(id)
+
+
+class UserStatus:
+    Unconfirmed = 'Unconfirmed'
+    Normal = 'Normal'
+    Forbidden = 'Forbidden'
 
 
 class Follow(db.Model):
@@ -18,22 +30,21 @@ class Follow(db.Model):
 
 
 class User(db.Model):
-    '''
-        博客的登录用户类
-    '''
     __tablename__ = 'users'
 
     # 基本信息
     id = db.Column(db.String(50), primary_key=True, default=next_id)
-    name = db.Column(db.String(32), unique=True)
-    username = db.Column(db.String(32))
+    email = db.Column(db.String(64), unique=True, index=True)
+    username = db.Column(db.String(32), unique=True, index=True)
+    password_hash = db.Column(db.String(128))
     sex = db.Column(db.String(6))
     user_image = db.Column(db.String(128))
     about_me = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, index=True)
+    created_at = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    last_seen = db.Column(db.DateTime)
 
     # 其他状态信息
-    status = db.Column(db.String(8), index=True)
+    status = db.Column(db.String(16), index=True, default=UserStatus.Normal)
 
     # 关联信息
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
@@ -41,8 +52,42 @@ class User(db.Model):
     classifytags = db.relationship('ClassifyTag', backref='user', lazy='dynamic')
     posts = db.relationship('Post', backref='user', lazy='dynamic')
 
+    # region password dealing
+    @property
+    def password(self):
+        raise ValueError('Password is not a readable property!')
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+    # endregion
+
+    # region login methods related to Flask-Login
+    @property
+    def is_authenticated(self):
+        if self.status == 'Unconfirmed':
+            return False
+        return True
+
+    @property
+    def is_active(self):
+        if self.status in ['Unconfirmed', 'Forbidden']:
+            return False
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return self.id
+    # endregion
+
     def __repr__(self):
-        return '<User name:%r>' % self.name
+        return '<User name:%r>' % self.username
 
 
 class Role(db.Model):
@@ -90,6 +135,8 @@ class Post(db.Model):
     content = db.Column(db.Text)
     content_html = db.Column(db.Text)
     status = db.Column(db.String(8))
+    create_at = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    update_at = db.Column(db.DateTime, index=True)
 
     # 关联信息
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
@@ -122,7 +169,6 @@ class Comment(db.Model):
 
     def __repr__(self):
         return '<Comment id:%r>' % self.id
-
 
 
 class ArticleTag(db.Model):
