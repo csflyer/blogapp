@@ -1,0 +1,21 @@
+{% extends "baseform/base.html" %}
+{% import "baseform/_wtf.html" as wtf %}
+
+{% block title %}{{ form.title }}{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+{% endblock %}
+
+{% block page_content %}
+    <div class="form-main center-block">
+        <div>
+            <h4 class="text-center"><a href='{{ url_for("main.index") }}'>{{ form.form_title }}</a></h4>
+            <hr>
+        </div>
+    <div>
+        {{ wtf.quick_form(form) }}
+    </div>
+    </div>
+{% endblock %}

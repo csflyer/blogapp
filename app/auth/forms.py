@@ -2,90 +2,122 @@ from flask import session
 from ..models import User, UserStatus
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, ValidationError
-from wtforms.validators import DataRequired, Email, Length, EqualTo
+from wtforms.validators import DataRequired, Email, Length, EqualTo, StopValidation
 
 
-class EmailForm(FlaskForm):
+class BaseForm(FlaskForm):
+    class Meta:
+        locals = ['zh-CN']
+
+    def __iter__(self):
+        token = self.csrf_token
+        yield token
+
+        field_names = {token.name}
+        for cls in self.__class__.__bases__:
+            for field in cls():
+                field_name = field.name
+                if field_name not in field_names:
+                    field_names.add(field_name)
+                    yield self[field_name]
+
+        for field_name in self._fields:
+            if field_name not in field_names:
+                yield self[field_name]
+
+
+class EmailForm(BaseForm):
     email = StringField('邮箱', validators=[DataRequired(), Email()])
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first() is None:
-            raise ValidationError('邮箱或密码错误!')
+            raise StopValidation('邮箱或密码错误!')
 
 
-class PasswordForm(FlaskForm):
-    password = PasswordField('密码', validators=[DataRequired(), Length(6, 20)])
+class Username(BaseForm):
+    username = StringField('用户名', validators=[DataRequired(), Length(6, 20)])
+
+    def validate_username(self, field):
+        if User.query.filter_by(username=field.data).first() is not None:
+            raise StopValidation('该用户名已有人使用，请更换后再试！')
+
+
+class PasswordForm(BaseForm):
+    password = PasswordField('密码', validators=[DataRequired(), Length(1, 20)])
 
     def validate_password(self, field):
         if field.data.isalnum() or field.data.isalpha():
-            raise ValidationError('密码必须同时包含字母和数字')
+            raise StopValidation('密码必须同时包含字母和数字')
 
 
-class UsernameForm(FlaskForm):
+class RepeatPasswordForm(BaseForm):
+    repeat_password = PasswordField('重复密码', validators=[DataRequired(), EqualTo('password')])
+
+
+class UsernameForm(BaseForm):
     username = StringField('用户名', validators=[DataRequired(), Length(1, 16)])
 
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first() is not None:
-            raise ValidationError('此昵称已有人使用，请更换您的昵称')
+            raise StopValidation('此昵称已有人使用，请更换您的昵称')
 
 
-class RememberMeForm(FlaskForm):
+class RememberForm(BaseForm):
     remember_me = BooleanField()
 
 
-class VerifyCodeForm(FlaskForm):
-    verify_code = StringField('验证码', validators=[DataRequired(), Length(min=4, max=4)])
+class VerifyCodeField(StringField):
+    def __call__(self, *args, **kwargs):
+        html = super(VerifyCodeField, self).__call__(*args, **kwargs)
+        addition = '<span id="code-change" class="input-group-addon">' \
+                   '<img id="validate_img" src="/auth/validate_code">' \
+                   '</span>'
+        return html + addition
+
+
+class VerifyCodeForm(BaseForm):
+    verify_code = VerifyCodeField('验证码', validators=[DataRequired(), Length(min=4, max=4)])
 
     def validate_verify_code(self, field):
         if field.data.upper() != session['verify_code'].upper():
-            raise ValidationError('验证码错误!')
+            raise StopValidation('验证码错误!')
 
 
-class SubmitForm(FlaskForm):
+class SubmitForm:
     def __call__(self, name):
-        class SubSumitForm:
+        class SubSubmitForm(BaseForm):
             submit = SubmitField(name)
-        return SubSumitForm
+        return SubSubmitForm
 
 
-class BasicForm(EmailForm, PasswordField, VerifyCodeForm):
+class BasicForm(EmailForm, PasswordForm, VerifyCodeForm):
     def validate_email(self, field):
         pass
 
 
-class BasicAuthForm(EmailForm, PasswordForm, VerifyCodeForm):
+class BasicAuthForm(BasicForm):
     def validate_email(self, field):
+        if len(self.errors) > 0:
+            return
         user = User.query.filter_by(email=field.data).first()
         if user is None or not user.verify_password(self.password.data):
-            raise ValidationError('邮箱或密码错误!')
+            raise StopValidation('邮箱或密码错误!')
         if user.status == UserStatus.Forbidden:
-            raise ValidationError('账号已封禁，请联系管理员!')
+            raise StopValidation('账号已封禁，请联系管理员!')
 
     def validate_password(self, field):
         pass
 
 
-class LoginForm(BasicAuthForm, RememberMeForm, SubmitForm('登陆')):
-    pass
+class LoginForm(BasicAuthForm, RememberForm, SubmitForm()('登陆')):
+    title = '登录 Crazyliu Blog'
+    form_title = '登录 Crazyliu Blog'
 
 
-class RegisterForm(BasicForm, SubmitForm('注册')):
-    password2 = PasswordField('重复密码', validators=[DataRequired(), EqualTo('password')])
+class RegisterForm(EmailForm, UsernameForm, PasswordForm, RepeatPasswordForm, VerifyCodeForm, SubmitForm()('注册')):
+    title = '注册 Crazyliu Blog'
+    form_title = '注册 Crazyliu Blog'
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data).first() is not None:
+            raise StopValidation("您的邮箱已注册, 请直接登录或者找回密码!")
