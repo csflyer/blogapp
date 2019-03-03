@@ -1,6 +1,9 @@
 import time, uuid
 from datetime import datetime
 from . import login_manager
+from flask import current_app
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from .Status import UserStatus
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 
@@ -12,12 +15,6 @@ def next_id():
 @login_manager.user_loader
 def load_user(id):
     return User.query.get(id)
-
-
-class UserStatus:
-    Unconfirmed = 'Unconfirmed'
-    Normal = 'Normal'
-    Forbidden = 'Forbidden'
 
 
 class Follow(db.Model):
@@ -44,7 +41,7 @@ class User(db.Model):
     last_seen = db.Column(db.DateTime)
 
     # 其他状态信息
-    status = db.Column(db.String(16), index=True, default=UserStatus.Normal)
+    status = db.Column(db.String(16), index=True, default=UserStatus.Unconfirmed)
 
     # 关联信息
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
@@ -68,15 +65,11 @@ class User(db.Model):
     # region login methods related to Flask-Login
     @property
     def is_authenticated(self):
-        if self.status == 'Unconfirmed':
-            return False
         return True
 
     @property
     def is_active(self):
-        if self.status in ['Unconfirmed', 'Forbidden']:
-            return False
-        return True
+        return not self.is_forbidden
 
     @property
     def is_anonymous(self):
@@ -85,6 +78,45 @@ class User(db.Model):
     def get_id(self):
         return self.id
     # endregion
+
+    # region register and confirm
+    def generate_confirm_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
+        return s.dumps({'confirm': self.id}).decode('ascii')
+
+    def confirm(self, token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return False
+        if data.get('confirm') != self.id:
+            return False
+        self.status = UserStatus.Normal
+        db.session.add(self)
+        db.session.commit()
+        return True
+    # endregion
+
+    @property
+    def is_confirmed(self):
+        return self.status != UserStatus.Unconfirmed
+
+    @is_confirmed.setter
+    def is_confirmed(self):
+        raise ValueError('is_confirmed is not a writable attribute!')
+
+    @property
+    def is_forbidden(self):
+        return self.status == UserStatus.Forbidden
+
+    @is_forbidden.setter
+    def is_forbidden(self):
+        raise ValueError('is_forbidden is not a writable attribute!')
+
+    def ping(self):
+        self.last_seen = datetime.utcnow()
+        db.session.add(self)
 
     def __repr__(self):
         return '<User name:%r>' % self.username

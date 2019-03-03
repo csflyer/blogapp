@@ -1,0 +1,9 @@
+亲爱的<b>{{ user.username }}</b>,
+<p>欢迎加入Crazyliu Blog！</p>
+<p>请点击下面的链接完成注册:</p>
+<p><a href="{{ url_for('auth.confirm', token=token, _external=True) }}">{{ url_for('auth.confirm', token=token, _external=True) }}</a>
+    如果以上链接无法点击，请将上面的地址手动复制到浏览器打开。</p>
+
+<p><strong>如果您从未主动注册过Crazyliu Blog, 请忽视这封邮件，很抱歉对您造成一些困扰！</strong></p>
+<p><strong>此邮件由系统自动发送，请勿回复，谢谢！</strong></p>
+<p><i>Crzyliu Blog Admin</i></p>

@@ -1,0 +1,12 @@
+{% extends "baseform/base.html" %}
+
+{% block title %}未激活的账户{% endblock %}
+
+{% block page_content %}
+    <div class="center-block" style="text-align: center;">
+        <h3>Hello, {{ current_user.username }}!</h3>
+        <h4>您的账户处于未激活状态，请点击已发往您注册邮箱的邮件中的链接完成激活</h4>
+        <p>如未收到邮件，请点击<a href="{{ url_for('auth.resend_confirmation', _external=True) }}">此处</a>重新发送注册邮件</p>
+    </div>
+
+{% endblock %}

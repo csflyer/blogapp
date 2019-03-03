@@ -42,12 +42,14 @@ class Username(BaseForm):
             raise StopValidation('该用户名已有人使用，请更换后再试！')
 
 
-class PasswordForm(BaseForm):
-    password = PasswordField('密码', validators=[DataRequired(), Length(1, 20)])
+class PasswordForm:
+    class SubPasswordForm(BaseForm):
+        password = PasswordField('密码', validators=[DataRequired(), Length(1, 20)])
 
-    def validate_password(self, field):
-        if field.data.isalnum() or field.data.isalpha():
-            raise StopValidation('密码必须同时包含字母和数字')
+        def validate_password(self, field):
+            if field.data.isnumeric() or field.data.isalpha():
+                raise StopValidation('密码必须同时包含字母和数字')
+
 
 
 class RepeatPasswordForm(BaseForm):
@@ -102,8 +104,6 @@ class BasicAuthForm(BasicForm):
         user = User.query.filter_by(email=field.data).first()
         if user is None or not user.verify_password(self.password.data):
             raise StopValidation('邮箱或密码错误!')
-        if user.status == UserStatus.Forbidden:
-            raise StopValidation('账号已封禁，请联系管理员!')
 
     def validate_password(self, field):
         pass
@@ -114,10 +114,33 @@ class LoginForm(BasicAuthForm, RememberForm, SubmitForm()('登陆')):
     form_title = '登录 Crazyliu Blog'
 
 
-class RegisterForm(EmailForm, UsernameForm, PasswordForm, RepeatPasswordForm, VerifyCodeForm, SubmitForm()('注册')):
+class RegisterForm(EmailForm,
+                   UsernameForm,
+                   PasswordForm,
+                   RepeatPasswordForm,
+                   VerifyCodeForm,
+                   SubmitForm()('注册')):
     title = '注册 Crazyliu Blog'
     form_title = '注册 Crazyliu Blog'
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first() is not None:
             raise StopValidation("您的邮箱已注册, 请直接登录或者找回密码!")
+
+
+class ChangePasswordForm():
+    def __new__(cls, *args, **kwargs):
+        super(ChangePasswordForm, cls).__new__()
+
+
+class ResetPasswordForm():
+    pass
+
+
+class ChangeEmailForm():
+    pass
+
+class base:
+
+
+class baseform()
