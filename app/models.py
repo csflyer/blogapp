@@ -1,5 +1,6 @@
 import time, uuid
 from datetime import datetime
+from .Status import TokenString
 from . import login_manager
 from flask import current_app
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -81,21 +82,17 @@ class User(db.Model):
 
     # region register and confirm
     def generate_confirm_token(self, expiration=3600):
-        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
-        return s.dumps({'confirm': self.id}).decode('ascii')
+        return self.generate_token(expiration, TokenString.Confirm, self.id)
 
     def confirm(self, token):
-        s = Serializer(current_app.config['SECRET_KEY'])
-        try:
-            data = s.loads(token)
-        except:
+        if not token:
             return False
-        if data.get('confirm') != self.id:
-            return False
-        self.status = UserStatus.Normal
-        db.session.add(self)
-        db.session.commit()
-        return True
+        if self.load_token(token, TokenString.Confirm, compare=True, value=self.id):
+            self.status = UserStatus.Normal
+            db.session.add(self)
+            db.session.commit()
+            return True
+        return False
     # endregion
 
     @property
@@ -117,6 +114,56 @@ class User(db.Model):
     def ping(self):
         self.last_seen = datetime.utcnow()
         db.session.add(self)
+
+    def generate_reset_password_token(self, expiration):
+        return self.generate_token(expiration, TokenString.ResetPassword, self.id)
+
+    @staticmethod
+    def generate_token(key_or_dict, value=None, expiration=None):
+            s = Serializer(current_app.config['SECRET_KEY'],
+                           expires_in=expiration or current_app.config['EMAIL_EXPIRATION'])
+            return s.dumps({key_or_dict: value} if isinstance(key_or_dict, str) else key_or_dict).decode('ascii')
+
+    @staticmethod
+    def load_token(self, token, key=None, compare=False, value=None):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return False
+        return (data.get(key) == value if compare else data.get(key)) if key else data
+
+    def generate_change_email_token(self, new_email):
+        data = {TokenString.ChangeEmail: self.id, TokenString.NewEmail: new_email}
+        return self.generate_token(data)
+
+    def confirm_change_email_token(self, token):
+        if not token:
+            return False
+        data = self.load_token(token)
+        if not data or data.get(TokenString.ChangeEmail) or data.get(TokenString.NewEmail):
+            return False
+        if self.id != data.get(TokenString.ChangeEmail):
+            return False
+        self.email = data.get(TokenString.NewEmail)
+        db.session.add(self)
+        db.session.commit()
+        return True
+
+
+
+    @staticmethod
+    def reset_password(self, token, new_password):
+        user_id = self.load_token(token, TokenString.ResetPassword)
+        if user_id:
+            user = User.get_or_404(user_id)
+            user.password = new_password
+            db.session.add(user)
+            return True
+        return False
+
+
+
 
     def __repr__(self):
         return '<User name:%r>' % self.username

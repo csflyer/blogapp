@@ -1,0 +1,14 @@
+尊敬的<b>{{ user.username }}</b>,
+
+<p>您刚才申请了重新设置您的邮件地址,</p>
+
+<p>请点击以下链接在打开的页面中重新设置您的密码，如不能点击，请手动复制链接到浏览器中打开</p>
+
+<p><a href="{{ url_for('auth.change_email', token=token, _external=True) }}">
+    {{ url_for('auth.change_email', token=token, _external=True) }}
+    </a>
+</p>
+
+<p>注: 如您从未申请重设密码服务，请忽略这封邮件，同时很抱歉对您造成困扰!</p>
+
+<p>此邮件由系统自动发送，请勿回复，谢谢!</p>

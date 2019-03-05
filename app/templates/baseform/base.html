@@ -44,10 +44,10 @@
                                 帮助 <b class="caret"></b>
                             </a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">找回密码</a></li>
-                            <li><a href="#">重设密码</a></li>
+                            <li><a href="{{ url_for('auth.change_password') }}">修改密码</a></li>
+                            <li><a href="{{ url_for('auth.reset_password_request') }}">重设密码</a></li>
                             <li role="separator" class="divider"></li>
-                            <li><a href="#">找回密码</a></li>
+                            <li><a href="{{ url_for('auth.change_email_request') }}">重设邮件地址</a></li>
                         </ul>
                         </li>
                     {% else %}
@@ -57,7 +57,7 @@
                                 {{ current_user.username }} <b class="caret"></b>
                             </a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">找回密码</a></li>
+                            <li><a href="#">修改密码</a></li>
                             <li><a href="#">重设密码</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a href="#">找回密码</a></li>

@@ -1,4 +1,5 @@
 from flask import session
+from flask_login import current_user
 from ..models import User, UserStatus
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, ValidationError
@@ -42,13 +43,12 @@ class Username(BaseForm):
             raise StopValidation('该用户名已有人使用，请更换后再试！')
 
 
-class PasswordForm:
-    class SubPasswordForm(BaseForm):
-        password = PasswordField('密码', validators=[DataRequired(), Length(1, 20)])
+class PasswordForm(BaseForm):
+    password = PasswordField('密码', validators=[DataRequired(), Length(1, 20)])
 
-        def validate_password(self, field):
-            if field.data.isnumeric() or field.data.isalpha():
-                raise StopValidation('密码必须同时包含字母和数字')
+    def validate_password(self, field):
+        if field.data.isnumeric() or field.data.isalpha():
+            raise StopValidation('密码必须同时包含字母和数字')
 
 
 
@@ -128,19 +128,46 @@ class RegisterForm(EmailForm,
             raise StopValidation("您的邮箱已注册, 请直接登录或者找回密码!")
 
 
-class ChangePasswordForm():
-    def __new__(cls, *args, **kwargs):
-        super(ChangePasswordForm, cls).__new__()
+class SubChangePasswordForm(FlaskForm):
+    old_password = PasswordField('旧密码', validators=[DataRequired()])
+    new_password = PasswordField('新密码', validators=[DataRequired()])
+    repeat_password = PasswordField('重复新密码', validators=[DataRequired(), EqualTo('new_password')])
+
+    def validate_old_password(self, field):
+        if not current_user.verify_password(field.data):
+            raise StopValidation('密码错误!')
+
+    def validate_new_password(self, field):
+        if field.data.isnumeric() or field.data.isalpha():
+            raise StopValidation('密码必须同时包含字母和数字')
 
 
-class ResetPasswordForm():
-    pass
+class ChangePasswordForm(SubChangePasswordForm, VerifyCodeField, SubmitForm()('修改密码')):
+    form_title= title = '修改密码'
 
 
-class ChangeEmailForm():
-    pass
+class ResetPasswordRequestForm(EmailForm, VerifyCodeForm, SubmitForm()('发送邮件到邮箱')):
+    form_title = title = '重设密码'
 
-class base:
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data).first() is None:
+            raise StopValidation('该邮箱还没有进行过注册!')
 
 
-class baseform()
+class ResetPasswordForm(EmailForm, PasswordForm, RepeatPasswordForm):
+    form_title = title = '重设密码'
+
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data).first() is None:
+            raise StopValidation('邮箱地址有误!')
+
+
+class ChangeEmailForm(EmailForm, VerifyCodeForm, SubmitForm()('更改邮件地址')):
+    form_title = title = '重设邮件地址'
+
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data).first() is not None:
+            raise StopValidation('该邮件地址已注册，请换个地址再试!')
+
+
+
