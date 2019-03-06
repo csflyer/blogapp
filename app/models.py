@@ -213,6 +213,7 @@ class Post(db.Model):
     type = db.Column(db.String(8))
     content = db.Column(db.Text)
     content_html = db.Column(db.Text)
+    view_nums = db.Column(db.Integer, index=True, default=0)
     status = db.Column(db.String(8))
     create_at = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     update_at = db.Column(db.DateTime, index=True)

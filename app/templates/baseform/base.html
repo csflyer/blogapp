@@ -52,6 +52,7 @@
                         </li>
                     {% else %}
                         <li><a href="{{ url_for('main.index') }}"><span class="glyphicon glyphicon-user"></span>主页</a></li>
+                        <li><a href="#"><span class="glyphicon glyphicon-pencil">写文章</span></a></li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 {{ current_user.username }} <b class="caret"></b>
@@ -60,7 +61,6 @@
                             <li><a href="#">修改密码</a></li>
                             <li><a href="#">重设密码</a></li>
                             <li role="separator" class="divider"></li>
-                            <li><a href="#">找回密码</a></li>
                             <li><a href="{{ url_for('auth.logout') }}">安全退出</a></li>
                         </ul>
                         </li>
@@ -82,6 +82,16 @@
         {% include "/baseform/_flashed_message.html" %}
 
         {% block page_content %}
+            <div class="row">
+                <div class="col-md-8">
+                    {% block left_part %}
+                    {% endblock %}
+                </div>
+                <div class="col-md-4">
+                    {% block right_part %}
+                    {% endblock %}
+                </div>
+            </div>
         {% endblock %}
     </div>
 {% endblock %}

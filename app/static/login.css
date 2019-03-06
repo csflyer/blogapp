@@ -34,3 +34,7 @@ a:hover{
     text-decoration: none;
     color: black;
 }
+
+.left_right{
+    padding: 10px;
+}
