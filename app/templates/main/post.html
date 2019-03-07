@@ -1,0 +1,9 @@
+{% extends "baseform/base.html" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block page_content %}
+    <div class="center-block">
+    {{ post.body_html }}
+    </div>
+{% endblock %}

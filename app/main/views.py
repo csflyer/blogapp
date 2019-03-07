@@ -21,3 +21,8 @@ def profile():
 
 
 
+
+@mian.route('/')
+
+
+
