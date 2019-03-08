@@ -11,18 +11,3 @@ def index():
 @main.route('/search')
 def search():
     pass
-
-
-@main.route('/profile')
-@main.route('/profile/overview')
-@login_required
-def profile():
-    pass
-
-
-
-
-@mian.route('/')
-
-
-

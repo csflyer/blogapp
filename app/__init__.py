@@ -40,4 +40,7 @@ def create_app(config_name='default'):
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
+    from .profile import profile as profile_blueprint
+    app.register_blueprint(profile_blueprint, url_prefix='/profile')
+
     return app

@@ -1,0 +1,65 @@
+{% extends "baseform/base.html" %}
+
+{% block title %}个人中心{% endblock %}
+
+{% block page_content %}
+    <div class="row">
+        <div class="col-md-9">
+            <div class="center-block">
+                <ul class="nav nav-tabs">
+                    <li role="presentation" class="active">
+                        <a href="#">总览</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="{{ url_for('profile.post') }}">文章管理</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">关注</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#">粉丝</a>
+                    </li>
+                    <li role="presentation" class="{% if not edit_profile %}hidden{% endif %}">
+                        <a href="">编辑资料</a>
+                    </li>
+                </ul>
+                {% if overview %}
+                    {% include "profile/overview.html" %}
+                {% elif post %}
+                    {% include "profile/post.html" %}
+                {% elif follow %}
+                    {% include "profile/follow.html" %}
+                {% elif fan %}
+                    {% include "profile/fan.html" %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <img class="img-responsive center-block"
+                             src="https://avatars1.githubusercontent.com/u/18329317?s=200&v=4">
+                    </li>
+                    <li class="list-group-item" style="text-align: center;">
+                        <p style="font-size:30px;line-height: 30px;">{{ current_user.username }}</p>
+                        <span>冷或是暖，人心自知</span>
+                    </li>
+                    <li class="list-group-item">
+                        <p class="margin_left_20">
+                            <span class="glyphicon glyphicon-globe"></span>
+                            <a href="Gui Lin">桂林</a>
+                        </p>
+                        <p class="margin_left_20">
+                            <span class="glyphicon glyphicon-envelope"></span>
+                            <a href="mailto:924105150@qq.com">924105150@qq.com</a>
+                        </p>
+                        <p class="center-block">
+                            <a class="btn btn-primary btn-sm" style="width: 100%;">编辑资料</a>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

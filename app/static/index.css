@@ -31,7 +31,7 @@ a{
 
 .pagination > li > a, .pagination>li>span{
     color: #777;
-    background-color: #f6f6f6;
+    background-color: transparent;
 }
 
 .glyphicon:before{
@@ -153,6 +153,33 @@ a{
     padding: 10px;
 }
 
-.margin_10{
+.margin_top_10{
     margin-top: 10px;
+}
+
+.margin_top_5{
+    margin-top: 5px;
+}
+
+.margin_left_20{
+    margin-left: 20px;
+}
+
+.margin_left_30{
+    margin-left: 30px;
+}
+
+
+.nav-tabs >li >a{
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.nav-tabs>li.active>a{
+    margin: 0px;
+    background-color: #F6F6F6;
+}
+
+.nav-tabs>li.active>a:hover{
+    background-color: transparent;
 }
