@@ -1,3 +1,5 @@
+{% from 'baseform/_pagination.html' import quick_pagination %}
+
 <div class="margin_top_10">
     <table class="table table-hover">
         <thead>
@@ -6,70 +8,25 @@
             <th><span class="glyphicon glyphicon-thumbs-up"></span>点赞数</th>
             <th><span class="glyphicon glyphicon-comment"></span>评论数</th>
             <th><span class="glyphicon glyphicon-time"></span>发表时间</th>
+            <th><span class="glyphicon glyphicon-expand">当前状态</span></th>
             <th></th>
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <td>一部关于糖的电影That.Sugar.Film</td>
-            <td>3800</td>
-            <td>524</td>
-            <td>2019-03-08</td>
-            <td>
-                <a href="#"><span class="glyphicon glyphicon-pencil"></span>修改</a>
-                <a href="#"><span class="glyphicon glyphicon-trash"></span>删除</a>
-            </td>
-        </tr>
-        <tr>
-            <td>一部关于糖的电影That.Sugar.Film</td>
-            <td>3800</td>
-            <td>524</td>
-            <td>2019-03-08</td>
-            <td>
-                <a href="#"><span class="glyphicon glyphicon-pencil"></span>修改</a>
-                <a href="#"><span class="glyphicon glyphicon-trash"></span>删除</a>
-            </td>
-        </tr>
-        <tr>
-            <td>一部关于糖的电影That.Sugar.Film</td>
-            <td>3800</td>
-            <td>524</td>
-            <td>2019-03-08</td>
-            <td>
-                <a href="#"><span class="glyphicon glyphicon-pencil"></span>修改</a>
-                <a href="#"><span class="glyphicon glyphicon-trash"></span>删除</a>
-            </td>
-        </tr>
-        <tr>
-            <td>一部关于糖的电影That.Sugar.Film</td>
-            <td>3800</td>
-            <td>524</td>
-            <td>2019-03-08</td>
-            <td>
-                <a href="#"><span class="glyphicon glyphicon-pencil"></span>修改</a>
-                <a href="#"><span class="glyphicon glyphicon-trash"></span>删除</a>
-            </td>
-        </tr>
-        <tr>
-            <td>一部关于糖的电影That.Sugar.Film</td>
-            <td>3800</td>
-            <td>524</td>
-            <td>2019-03-08</td>
-            <td>
-                <a href="#"><span class="glyphicon glyphicon-pencil"></span>修改</a>
-                <a href="#"><span class="glyphicon glyphicon-trash"></span>删除</a>
-            </td>
-        </tr>
-        <tr>
-            <td>一部关于糖的电影That.Sugar.Film</td>
-            <td>3800</td>
-            <td>524</td>
-            <td>2019-03-08</td>
-            <td>
-                <a href="#"><span class="glyphicon glyphicon-pencil"></span>修改</a>
-                <a href="#"><span class="glyphicon glyphicon-trash"></span>删除</a>
-            </td>
-        </tr>
+        {% for post in posts %}
+            <tr id="{{ post.id }}">
+                <td>{{ post.title }}</td>
+                <td>{{ post.view_nums }}</td>
+                <td>{{ post.view_nums }}</td>
+                <td>{{ moment(post.created_at).format('L') }}</td>
+                <td>{{ post.status }}</td>
+                <td>
+                    <a href="{{ url_for('main.edit_post', id=post.id) }}"><span class="glyphicon glyphicon-pencil"></span>修改</a>
+                    <a href="#" class="delete"><span class="glyphicon glyphicon-trash"></span>删除</a>
+                </td>
+            </tr>
+        {% endfor %}
         </tbody>
     </table>
 </div>
+{{ quick_pagination(pagination, 'profile.post', id=user.id) }}

@@ -28,6 +28,26 @@
 1. 条形码生成工具 包含单个和批量
 2. 
 
-## 5. 
+## 5. api接口
+1. 分成三部分 error, data, message
+error为状态码，空表示成功，其他含义与HTTP协议状态码含义类似
+401 未认证 402 注册失败
+500 Internal Server Error
+404 Not Found
 
+
+
+2. api<br>
+2.1 认证部分
+/user/login
+/user/register
+/user/logout
+/auth/validate_code
+
+2.2 用户部分<br>
+/user
+/user/<<'id'>>
+/user
+
+2.3 文章部分
 

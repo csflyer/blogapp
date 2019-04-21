@@ -1,36 +1,43 @@
 {% extends "baseform/base.html" %}
 
-{% block title %}个人中心{% endblock %}
+{% block title %}{{ user.username }}的个人中心{% endblock %}
 
 {% block page_content %}
     <div class="row">
         <div class="col-md-9">
-            <div class="center-block">
+            <div>
                 <ul class="nav nav-tabs">
-                    <li role="presentation" class="active">
-                        <a href="#">总览</a>
+                    <li role="presentation" {% if overview %}class="active"{% endif %}>
+                        <a href="{% if overview %}#{% else %}{{ url_for('profile.overview', id=user.id) }}{% endif %}">总览</a>
                     </li>
-                    <li role="presentation">
-                        <a href="{{ url_for('profile.post') }}">文章管理</a>
+                    <li role="presentation" {% if post %}class="active"{% endif %}>
+                        <a href="{% if post %}#{% else %}{{ url_for('profile.post', id=user.id) }}{% endif %}">文章管理</a>
                     </li>
-                    <li role="presentation">
-                        <a href="#">关注</a>
+                    <li role="presentation"{% if ffollowed %}class="active"{% endif %}>
+                        <a href="{% if follow %}#{% else %}{{ url_for('profile.followed', id=user.id) }}{% endif %}">关注</a>
                     </li>
-                    <li role="presentation">
-                        <a href="#">粉丝</a>
+                    <li role="presentation" {% if ffollower %}class="active"{% endif %}>
+                        <a href="{% if fan %}#{% else %}{{ url_for('profile.follower', id=user.id) }}{% endif %}">粉丝</a>
                     </li>
-                    <li role="presentation" class="{% if not edit_profile %}hidden{% endif %}">
-                        <a href="">编辑资料</a>
-                    </li>
+                    {% if edit %}
+                        <li role="presentation" class="active">
+                            <a href="#">编辑资料</a>
+                        </li>
+                    {% endif %}
+                    {% if current_user.id != user.id %}
+                            <a href="{{ url_for('profile.overview', id=current_user.id) }}" class="pull-right">点击回到{{ current_user.username }}的个人中心</a>
+                    {% endif %}
                 </ul>
                 {% if overview %}
                     {% include "profile/overview.html" %}
                 {% elif post %}
                     {% include "profile/post.html" %}
-                {% elif follow %}
+                {% elif ffollowed %}
                     {% include "profile/follow.html" %}
-                {% elif fan %}
-                    {% include "profile/fan.html" %}
+                {% elif ffollower %}
+                    {% include "profile/follow.html" %}
+                {% elif edit %}
+                    {% include "profile/form.html" %}
                 {% endif %}
             </div>
         </div>
@@ -39,24 +46,61 @@
                 <ul class="list-group">
                     <li class="list-group-item">
                         <img class="img-responsive center-block"
-                             src="https://avatars1.githubusercontent.com/u/18329317?s=200&v=4">
+                             src="{{ user.gravatar(size=200) }}">
                     </li>
                     <li class="list-group-item" style="text-align: center;">
-                        <p style="font-size:30px;line-height: 30px;">{{ current_user.username }}</p>
-                        <span>冷或是暖，人心自知</span>
+                        <p style="font-size:30px;line-height: 30px;">{{ user.username }}</p>
+                        {% if user.sex == 'male' %}
+                            <svg t="1554622252226" class="icon" style="" viewBox="0 0 1024 1024" p-id="553" xmlns:xlink="http://www.w3.org/1999/xlink" width="14" height="14"><defs><style type="text/css"></style></defs><path d="M1024 365.723826V0H658.276174l144.027826 144.005565-157.050435 157.028174a400.695652 400.695652 0 0 0-242.977391-81.608348C180.112696 219.425391 0 399.538087 0 621.746087 0 843.887304 180.112696 1024 402.276174 1024c222.163478 0 402.298435-180.112696 402.298435-402.276174a400.695652 400.695652 0 0 0-81.608348-242.977391l157.028174-157.028174L1024 365.723826zM609.146435 828.549565a290.459826 290.459826 0 0 1-206.870261 85.704348 290.459826 290.459826 0 0 1-206.848-85.704348 290.459826 290.459826 0 0 1-85.704348-206.848c0-78.180174 30.386087-151.552 85.704348-206.870261a290.459826 290.459826 0 0 1 206.848-85.704347c78.180174 0 151.552 30.386087 206.870261 85.704347a290.459826 290.459826 0 0 1 85.704348 206.870261c0 78.157913-30.386087 151.529739-85.704348 206.848z" p-id="554" data-spm-anchor-id="a313x.7781069.0.i0" class="selected"></path></svg>
+                        {% elif user.sex == 'female' %}
+                            <svg t="1554622501311" class="icon" style="" viewBox="0 0 1024 1024"  p-id="1419" xmlns:xlink="http://www.w3.org/1999/xlink" width="14" height="14"><defs><style type="text/css"></style></defs><path d="M224 739.669333l109.824-109.824A361.109333 361.109333 0 0 1 256 405.333333c0-200.298667 162.368-362.666667 362.666667-362.666666s362.666667 162.368 362.666666 362.666666-162.368 362.666667-362.666666 362.666667a361.109333 361.109333 0 0 1-224.512-77.824L284.330667 800l87.168 87.168a42.666667 42.666667 0 0 1-60.330667 60.330667L224 860.330667l-108.501333 108.501333a42.666667 42.666667 0 0 1-60.330667-60.330667L163.669333 800l-87.168-87.168a42.666667 42.666667 0 0 1 60.330667-60.330667l87.168 87.168zM618.666667 682.666667c153.173333 0 277.333333-124.16 277.333333-277.333334S771.84 128 618.666667 128s-277.333333 124.16-277.333334 277.333333 124.16 277.333333 277.333334 277.333334z" fill="" p-id="1420"></path></svg>
+                        {% else %}
+                            <svg t="1554622674089" class="icon" style="" viewBox="0 0 1024 1024"  p-id="4058" xmlns:xlink="http://www.w3.org/1999/xlink" width="14" height="14"><defs><style type="text/css"></style></defs><path d="M658.285714 18.285714q0-8 5.142857-13.142857t13.142858-5.142857h164.571428q14.857143 0 25.714286 10.857143t10.857143 25.714286v164.571428q0 8-5.142857 13.142857t-13.142858 5.142857h-36.571428q-8 0-13.142857-5.142857t-5.142857-13.142857V124.571429l-145.142858 145.714285q72 90.285714 72 205.142857 0 126.285714-84.285714 219.714286T438.857143 802.285714v75.428572h54.857143q8 0 13.142857 5.142857t5.142857 13.142857v36.571429q0 8-5.142857 13.142857t-13.142857 5.142857h-54.857143v54.857143q0 8-5.142857 13.142857t-13.142857 5.142857h-36.571429q-8 0-13.142857-5.142857t-5.142857-13.142857v-54.857143h-54.857143q-8 0-13.142857-5.142857t-5.142857-13.142857v-36.571429q0-8 5.142857-13.142857t13.142857-5.142857h54.857143v-75.428572q-85.142857-9.142857-154.571429-58.857143T104.571429 615.714286 74.285714 449.142857q9.142857-116.571429 91.428572-202T364 148.571429q67.428571-8 130.285714 10.857142t113.142857 58.857143l145.714286-145.142857h-76.571428q-8 0-13.142858-5.142857t-5.142857-13.142857V18.285714zM402.285714 731.428571q105.714286 0 180.857143-75.142857T658.285714 475.428571 583.142857 294.571429 402.285714 219.428571 221.428571 294.571429 146.285714 475.428571t75.142857 180.857143T402.285714 731.428571z" p-id="4059"></path></svg>
+                        {% endif %}
+                        <span>{{ user.about_me }}</span>
+                    </li>
+                    <li class="list-group-item text-center">
+                        <div class="margin_top_5">
+                            <span class="label label-primary">粉丝 {{ user.followers.count() - 1}}</span>
+                            <span class="label label-info">关注 {{ user.followed.count() - 1 }}</span>
+                        </div>
+                        <div class="margin_top_5">
+                            <span class="label label-warning">文章 {{ user.posts.count() }}</span>
+                            <span class="label label-success">留言 {{ user.comments.count() }}</span>
+                        </div>
                     </li>
                     <li class="list-group-item">
-                        <p class="margin_left_20">
-                            <span class="glyphicon glyphicon-globe"></span>
-                            <a href="Gui Lin">桂林</a>
-                        </p>
-                        <p class="margin_left_20">
-                            <span class="glyphicon glyphicon-envelope"></span>
-                            <a href="mailto:924105150@qq.com">924105150@qq.com</a>
-                        </p>
-                        <p class="center-block">
-                            <a class="btn btn-primary btn-sm" style="width: 100%;">编辑资料</a>
-                        </p>
+                        {% if current_user.location %}
+
+                             <a href="http://maps.google.com/?q={{ user.location }}">
+                                 <p class="margin_left_20">
+                                    <span class="glyphicon glyphicon-globe"></span>
+                                    现居 {{ user.location }}
+                                </p>
+                             </a>
+                        {% endif %}
+                        <a href="mailto:924105150@qq.com">
+                            <p class="margin_left_20">
+                                <span class="glyphicon glyphicon-envelope">{{ user.email }}</span>
+                            </p>
+                        </a>
+                        {% if user.id == current_user.id %}
+                            <p class="center-block">
+                                <a class="btn btn-primary btn-sm {% if edit %}hidden{% endif %}" style="width: 100%;" href="{{ url_for('profile.edit') }}">编辑资料</a>
+                            </p>
+                        {% elif followed %}
+                            <p class="center-block">
+                                <a class="btn btn-primary btn-sm {% if edit %}hidden{% endif %}" style="width: 100%;" href="{{ url_for('profile.unfollow', id=user.id) }}">取消关注</a>
+                            </p>
+                        {% else %}
+                            <p class="center-block">
+                                <a class="btn btn-primary btn-sm {% if edit %}hidden{% endif %}" style="width: 100%;" href="{{ url_for('profile.follow', id=user.id) }}">关注</a>
+                            </p>
+                        {% endif %}
+
+                        {% if follower %}
+                            <div class="text_center"><span>对方也是您的粉丝喔:-O</span></div>
+                        {% endif %}
                     </li>
                 </ul>
             </div>

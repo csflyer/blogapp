@@ -1,106 +1,57 @@
-<div id="sort-bar">
-    <div class="btn-group btn-group-sm" role="group" aria-label="...">
-        <button type="button" class="btn btn-sort"><span class="glyphicon glyphicon-sort"></span>按时间排序
-        </button>
-        <button type="button" class="btn btn-sort"><span class="glyphicon glyphicon glyphicon-fire"></span>按时间排序
-        </button>
+{% import 'baseform/_pagination.html' as wtf %}
+
+{% if now_tag %}
+    <div id="sort-bar'">
+        <div class="btn-group btn-group-sm" role="group" aria-label="...">
+            <button type="button" class="btn btn-sort">
+                <a href="{{ url_for('main.index') }}">
+                    <span class="glyphicon glyphicon-file"></span>
+                    <span class="font_14">当前分类: {{ now_tag.name }}</span>
+                </a>
+            </button>
+        </div>
     </div>
-</div>
+{% else %}
+    <div id="sort-bar">
+        <div class="btn-group btn-group-sm" role="group" aria-label="...">
+            <button type="button" class="btn btn-sort">
+                <a href="{{ url_for('main.index') }}">
+                    <span class="glyphicon glyphicon-sort"></span>
+                    <span class="font_14">按时间排序</span>
+                </a>
+            </button>
+            <button type="button" class="btn btn-sort">
+                <a href="{{ url_for('main.index', order_by='hottest') }}">
+                    <span class="glyphicon glyphicon glyphicon-fire"></span>
+                    <span class="font_14">按热度排序</span>
+                </a>
+            </button>
+        </div>
+    </div>
+{% endif %}
 <div class="content">
+    {% for post in posts %}
     <div class="article">
-        <a href="#">
-            <h1>安装 Scrapy 失败的正确解决方法及运行中报错的解决思路</h1>
+        <a href="{{ url_for('main.post', id=post.id) }}">
+            <h1>{{ post.title }}</h1>
         </a>
-        <p>由于前段时间电脑报废了，所以最近换了个新电脑，于是重新安装了很多常用的软件，Python 大法就不用说了，当然是在电脑到来的第一天就安装了。今天想写一个爬虫，又不想麻烦，于是想到了用
-            scrapy，这个爬虫框架好久没用了，新电脑也没有安装，于是在重新安装的时候遇到了一些问题，本文就来记录一下遇到的问题和解决的方式。</p>
-        <span class="glyphicon glyphicon-calendar"></span>2天前
-        <span class="glyphicon glyphicon-book"></span>Docker
-        <span class="glyphicon glyphicon-eye-open"></span>965000
-        <span class="glyphicon glyphicon-comment"></span>120
+        <div class="article-tag">
+            {% for tag in post.articletags %}
+                <span class="label {{ ['label-default', 'label-primary', 'label-success', 'label-info', 'label-warning', 'label-danger'] | random }}">{{ tag.name }}</span>
+            {% endfor %}
+        </div>
+        <p>{{ post.summary }}</p>
+        <div class="article-bottom">
+            <a href="{{ url_for('profile.overview', id=post.user.id) }}">
+                <span class="user_image_wrap span">
+                    <img class='user_image' src="{{ post.user.gravatar(size=14) }}"/>
+                </span>{{ post.user.username }}
+            </a>
+            <span class="glyphicon glyphicon-calendar span"></span>{{ moment(post.created_at).format('L') }}
+            <span class="glyphicon glyphicon-eye-open span"></span>{{ post.view_nums }}
+            <span class="glyphicon glyphicon-comment span"></span>{{ post.comments.count() }}
+        </div>
     </div>
-    <div class="article">
-        <a href="#">
-            <h1>安装 Scrapy 失败的正确解决方法及运行中报错的解决思路</h1>
-        </a>
-        <p>由于前段时间电脑报废了，所以最近换了个新电脑，于是重新安装了很多常用的软件，Python 大法就不用说了，当然是在电脑到来的第一天就安装了。今天想写一个爬虫，又不想麻烦，于是想到了用
-            scrapy，这个爬虫框架好久没用了，新电脑也没有安装，于是在重新安装的时候遇到了一些问题，本文就来记录一下遇到的问题和解决的方式。</p>
-        <span class="glyphicon glyphicon-calendar"></span>2天前
-        <span class="glyphicon glyphicon-book"></span>Docker
-        <span class="glyphicon glyphicon-eye-open"></span>965000
-        <span class="glyphicon glyphicon-comment"></span>120
-    </div>
-    <div class="article">
-        <a href="#">
-            <h1>安装 Scrapy 失败的正确解决方法及运行中报错的解决思路</h1>
-        </a>
-        <p>由于前段时间电脑报废了，所以最近换了个新电脑，于是重新安装了很多常用的软件，Python 大法就不用说了，当然是在电脑到来的第一天就安装了。今天想写一个爬虫，又不想麻烦，于是想到了用
-            scrapy，这个爬虫框架好久没用了，新电脑也没有安装，于是在重新安装的时候遇到了一些问题，本文就来记录一下遇到的问题和解决的方式。</p>
-        <span class="glyphicon glyphicon-calendar"></span>2天前
-        <span class="glyphicon glyphicon-book"></span>Docker
-        <span class="glyphicon glyphicon-eye-open"></span>965000
-        <span class="glyphicon glyphicon-comment"></span>120
-    </div>
-    <div class="article">
-        <a href="#">
-            <h1>安装 Scrapy 失败的正确解决方法及运行中报错的解决思路</h1>
-        </a>
-        <p>由于前段时间电脑报废了，所以最近换了个新电脑，于是重新安装了很多常用的软件，Python 大法就不用说了，当然是在电脑到来的第一天就安装了。今天想写一个爬虫，又不想麻烦，于是想到了用
-            scrapy，这个爬虫框架好久没用了，新电脑也没有安装，于是在重新安装的时候遇到了一些问题，本文就来记录一下遇到的问题和解决的方式。</p>
-        <span class="glyphicon glyphicon-calendar"></span>2天前
-        <span class="glyphicon glyphicon-book"></span>Docker
-        <span class="glyphicon glyphicon-eye-open"></span>965000
-        <span class="glyphicon glyphicon-comment"></span>120
-    </div>
-    <div class="article">
-        <a href="#">
-            <h1>安装 Scrapy 失败的正确解决方法及运行中报错的解决思路</h1>
-        </a>
-        <p>由于前段时间电脑报废了，所以最近换了个新电脑，于是重新安装了很多常用的软件，Python 大法就不用说了，当然是在电脑到来的第一天就安装了。今天想写一个爬虫，又不想麻烦，于是想到了用
-            scrapy，这个爬虫框架好久没用了，新电脑也没有安装，于是在重新安装的时候遇到了一些问题，本文就来记录一下遇到的问题和解决的方式。</p>
-        <span class="glyphicon glyphicon-calendar"></span>2天前
-        <span class="glyphicon glyphicon-book"></span>Docker
-        <span class="glyphicon glyphicon-eye-open"></span>965000
-        <span class="glyphicon glyphicon-comment"></span>120
-    </div>
-    <div class="article">
-        <a href="#">
-            <h1>安装 Scrapy 失败的正确解决方法及运行中报错的解决思路</h1>
-        </a>
-        <p>由于前段时间电脑报废了，所以最近换了个新电脑，于是重新安装了很多常用的软件，Python 大法就不用说了，当然是在电脑到来的第一天就安装了。今天想写一个爬虫，又不想麻烦，于是想到了用
-            scrapy，这个爬虫框架好久没用了，新电脑也没有安装，于是在重新安装的时候遇到了一些问题，本文就来记录一下遇到的问题和解决的方式。</p>
-        <span class="glyphicon glyphicon-calendar"></span>2天前
-        <span class="glyphicon glyphicon-book"></span>Docker
-        <span class="glyphicon glyphicon-eye-open"></span>965000
-        <span class="glyphicon glyphicon-comment"></span>120
-    </div>
-    <div class="article">
-        <a href="#">
-            <h1>安装 Scrapy 失败的正确解决方法及运行中报错的解决思路</h1>
-        </a>
-        <p>由于前段时间电脑报废了，所以最近换了个新电脑，于是重新安装了很多常用的软件，Python 大法就不用说了，当然是在电脑到来的第一天就安装了。今天想写一个爬虫，又不想麻烦，于是想到了用
-            scrapy，这个爬虫框架好久没用了，新电脑也没有安装，于是在重新安装的时候遇到了一些问题，本文就来记录一下遇到的问题和解决的方式。</p>
-        <span class="glyphicon glyphicon-calendar"></span>2天前
-        <span class="glyphicon glyphicon-book"></span>Docker
-        <span class="glyphicon glyphicon-eye-open"></span>965000
-        <span class="glyphicon glyphicon-comment"></span>120
-    </div>
-    <nav aria-label="Page navigation" style="text-align: center;">
-        <ul id = "pagination" class="pagination">
-            <li>
-                <a href="#" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-            <li><a href="#">1</a></li>
-            <li><a href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#">4</a></li>
-            <li><a href="#">5</a></li>
-            <li>
-                <a href="#" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+    {% endfor %}
+    {{ wtf.quick_pagination(pagination, 'main.index', order_by=order_by) }}
 </div>

@@ -2,7 +2,8 @@
 # @Author : Crazyliu
 # @File : tool.py
 
-from flask import flash
+from flask import flash, current_app, request
+from flask_login import current_user
 
 
 class FlashMsg:
@@ -17,6 +18,27 @@ def get_form_error_message(form):
         if len(errors) > 0:
             return errors[0]
     return ''
+
+
+class Log:
+    @classmethod
+    def baselog(cls, log_func, message):
+        if not current_user.is_anonymous:
+            log_func(' User : {} '.format(current_user.email) + ' Host : {} '.format(request.remote_addr) + message)
+        else:
+            log_func(' Host : {} '.format(request.remote_addr) + message)
+
+    @classmethod
+    def info(cls, message):
+        cls.baselog(current_app.logger.info, message)
+
+    @classmethod
+    def warning(cls, message):
+        cls.baselog(current_app.logger.warning, message)
+
+    @classmethod
+    def error(cls, message):
+        cls.baselog(current_app.logger.error, message)
 
 
 

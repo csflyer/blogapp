@@ -1,7 +1,12 @@
 {% extends "baseform/base.html" %}
-{% include "baseform/_wtf.html" as wtf %}
+{% import "baseform/_wtf.html" as wtf %}
 
 {% block title %}编写新文章{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {{ pagedown.include_pagedown() }}
+{% endblock %}
 
 {% block page_content %}
 {{ wtf.quick_form(form) }}

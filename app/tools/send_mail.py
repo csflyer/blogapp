@@ -4,6 +4,7 @@
 from .. import mail
 from flask import current_app, render_template
 from flask_mail import Message
+from threading import Thread
 
 
 def send_mail(to, subject, template, **kwargs):
@@ -14,6 +15,9 @@ def send_mail(to, subject, template, **kwargs):
     msg.body = render_template(template + '.txt', **kwargs)
     msg.html = render_template(template + '.html', **kwargs)
     mail.send(msg)
+
+    Thread(target=mail.send, args=(msg,)).start()
+    return
 
 
 

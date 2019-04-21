@@ -1,6 +1,7 @@
 from flask import session
 from flask_login import current_user
-from ..models import User, UserStatus
+from ..models import User
+from random import randint
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, ValidationError
 from wtforms.validators import DataRequired, Email, Length, EqualTo, StopValidation
@@ -51,7 +52,6 @@ class PasswordForm(BaseForm):
             raise StopValidation('密码必须同时包含字母和数字')
 
 
-
 class RepeatPasswordForm(BaseForm):
     repeat_password = PasswordField('重复密码', validators=[DataRequired(), EqualTo('password')])
 
@@ -81,8 +81,10 @@ class VerifyCodeForm(BaseForm):
     verify_code = VerifyCodeField('验证码', validators=[DataRequired(), Length(min=4, max=4)])
 
     def validate_verify_code(self, field):
-        if field.data.upper() != session['verify_code'].upper():
+        if field.data.upper() != str(session['verify_code']).upper():
+            session['verify_code'] = randint(0, 1000)
             raise StopValidation('验证码错误!')
+        session['verify_code'] = randint(0, 1000)
 
 
 class SubmitForm:
@@ -114,6 +116,8 @@ class LoginForm(BasicAuthForm, RememberForm, SubmitForm()('登陆')):
     form_title = '登录 Crazyliu Blog'
 
 
+
+
 class RegisterForm(EmailForm,
                    UsernameForm,
                    PasswordForm,
@@ -128,7 +132,7 @@ class RegisterForm(EmailForm,
             raise StopValidation("您的邮箱已注册, 请直接登录或者找回密码!")
 
 
-class SubChangePasswordForm(FlaskForm):
+class SubChangePasswordForm(BaseForm):
     old_password = PasswordField('旧密码', validators=[DataRequired()])
     new_password = PasswordField('新密码', validators=[DataRequired()])
     repeat_password = PasswordField('重复新密码', validators=[DataRequired(), EqualTo('new_password')])
@@ -142,8 +146,8 @@ class SubChangePasswordForm(FlaskForm):
             raise StopValidation('密码必须同时包含字母和数字')
 
 
-class ChangePasswordForm(SubChangePasswordForm, VerifyCodeField, SubmitForm()('修改密码')):
-    form_title= title = '修改密码'
+class ChangePasswordForm(SubChangePasswordForm, VerifyCodeForm, SubmitForm()('修改密码')):
+    form_title = title = '修改密码'
 
 
 class ResetPasswordRequestForm(EmailForm, VerifyCodeForm, SubmitForm()('发送邮件到邮箱')):
@@ -154,7 +158,7 @@ class ResetPasswordRequestForm(EmailForm, VerifyCodeForm, SubmitForm()('发送�
             raise StopValidation('该邮箱还没有进行过注册!')
 
 
-class ResetPasswordForm(EmailForm, PasswordForm, RepeatPasswordForm):
+class ResetPasswordForm(EmailForm, PasswordForm, RepeatPasswordForm, SubmitForm()('重设密码')):
     form_title = title = '重设密码'
 
     def validate_email(self, field):

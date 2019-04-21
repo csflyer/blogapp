@@ -14,9 +14,13 @@ def make_shell_context():
     return dict(app=app, db=db, User=User, Role=Role, Post=Post, Follow=Follow, ClassifyTag=ClassifyTag,
                 Comment=Comment, ArticleTag=ArticleTag, send_mail=send_mail)
 
+@manager.command
+def test():
+    pass
 
 manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
+
 
 if __name__ == '__main__':
     manager.run()

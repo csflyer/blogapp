@@ -3,7 +3,25 @@
 {% block title %}{{ post.title }}{% endblock %}
 
 {% block page_content %}
-    <div class="center-block">
-    {{ post.body_html }}
+    <div>
+    <h1>{{ post.title }}</h1>
+        <div></div>
+        <div class="margin_bottom_10 margin_right_10">
+            <a href="{{ url_for('profile.overview', id=post.user.id) }}" class="margin_left_10">
+                <span class="user_image_wrap span">
+                    <img class='user_image' src="{{ post.user.gravatar(size=14) }}"/>
+                </span>{{ post.user.username }}
+            </a>
+            <span class="glyphicon glyphicon-calendar span margin_left_10"></span>{{ moment(post.created_at).format('L') }}
+            <span class="glyphicon glyphicon-eye-open span margin_left_10"></span>{{ post.view_nums }}
+            <span class="glyphicon glyphicon-comment span margin_left_10"></span>{{ post.comments.count() }}
+
+            {% for tag in post.articletags %}
+                <span class="label {{ ['label-default', 'label-primary', 'label-success', 'label-info', 'label-warning', 'label-danger'] | random }}">{{ tag.name }}</span>
+            {% endfor %}
+
+        </div>
+    {{ post.content_html | safe }}
     </div>
+    {% include 'baseform/comments.html' %}
 {% endblock %}

@@ -17,6 +17,10 @@ button{
     background-color: transparent;
 }
 
+h1{
+    font-size: 20px;
+}
+
 a:hover{
     text-decoration: none;
 }
@@ -47,6 +51,11 @@ a{
     margin-bottom: 0px;
 }
 
+.font_14{
+    font-size: 14px;
+}
+
+
 .btn-sort:hover{
     background-color: #eeeeee;
 }
@@ -72,7 +81,6 @@ a{
 }
 
 .article > p{
-    padding: 0px 10px;
     margin-bottom: 5px;
 }
 
@@ -82,7 +90,20 @@ a{
     text-decoration: none;
 }
 
-.article span{
+.article > .article-tag{
+    margin: 10px 0px;
+}
+
+.article > .article-tag > span{
+    margin-right: 5px;
+}
+
+.article > .article-bottom{
+    position: relative;
+    left: 0px;
+}
+
+.article > .article-bottom > .span{
     margin-left: 10px;
 }
 
@@ -135,7 +156,8 @@ a{
 }
 
 #pagination{
-    margin: 10px 0px;
+    display: block;
+    margin: 10px auto;
 }
 
 #code-change{
@@ -161,12 +183,20 @@ a{
     margin-top: 5px;
 }
 
+.margin_top_20{
+    margin-top: 20px;
+}
+
 .margin_left_20{
     margin-left: 20px;
 }
 
 .margin_left_30{
     margin-left: 30px;
+}
+
+.margin_bottom_10{
+    margin-bottom: 10px;
 }
 
 
@@ -183,3 +213,65 @@ a{
 .nav-tabs>li.active>a:hover{
     background-color: transparent;
 }
+
+.add_tag_list{
+    max-width: 200px;
+}
+
+.pagination-nav{
+    text-align: center;
+}
+
+.comments img{
+    float: left;
+    height: 40px;
+    width: 40px;
+    margin-left: 10px;
+}
+
+.comment{
+    padding-left: 50px;
+    border-left: 4px solid gray;
+}
+
+.comment-username{
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#cancel-comment{
+    float: right;
+}
+
+#comment-content{
+    margin: 10px 0px;
+}
+
+.user_image_wrap{
+    margin-right: 5px;
+}
+
+.user_image{
+    position: relative;
+    top: -1px;
+}
+
+.icon{
+    display: inline-block;
+
+}
+
+.font_20{
+    font-size: 20px;
+}
+
+.text_center{
+    text-align: center;
+}
+
+
+.margin_right_10{
+    margin-right: 10px;
+}
+
+

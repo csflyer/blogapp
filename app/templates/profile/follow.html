@@ -1,0 +1,39 @@
+{% from 'baseform/_pagination.html' import quick_pagination %}
+
+<div class="margin_top_10">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th><span class="glyphicon glyphicon-user"></span>用户名</th>
+            <th><span class="glyphicon glyphicon-thumbs-up"></span>性别</th>
+            <th><span class="glyphicon glyphicon-time"></span>加入时间</th>
+            <th><span class="glyphicon glyphicon-expand">当前状态</span></th>
+            {% if ffollowed %}
+            <th></th>
+            {% endif %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for u in users %}
+            <tr id="{{ u.id }}">
+                <td>
+                    <a href="{{ url_for('profile.overview', id=u.id) }}">
+                    <span class="user_image_wrap span">
+                        <img class='user_image' src="{{ u.gravatar(size=14) }}"/>
+                    </span>{{ u.username }}
+                    </a>
+                </td>
+                <td>{{ u.sex }}</td>
+                <td>{{ moment(u.created_at).format('L')}}</td>
+                <td>{{ u.status }}</td>
+                {% if ffollowed and current_user.id == user.id %}
+                <td>
+                    <a href="{{ url_for('profile.unfollow', id=u.id) }}"><span class="glyphicon glyphicon-pencil"></span>取消关注</a>
+                </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{{ quick_pagination(pagination, endpoint, id=user.id) }}
